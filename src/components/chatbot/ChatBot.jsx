@@ -28,10 +28,14 @@ export const ChatBot = ({
     try {
       setQueryInProgress(true)
       const res = await apiCall(apiEndpoints.query, { query: msg })
-      console.log("api res==", res)
-      setQueryRes(res, messageCopy)
+      // console.log("api res==", res)
+      if (res.data && res.data.error) {
+        setQueryRes(res.data.error, messageCopy)
+      } else if (res.data && res.data.responseData) {
+        setQueryRes(res.data.responseData, messageCopy)
+      }
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       setQueryRes("", messageCopy)
     }
   }
