@@ -24,8 +24,8 @@
   top: initial;
   right: 32px;
   left: initial;
-  width: 700px;
-  height: 700px;
+  width: 600px;
+  height: 600px;
   z-index: 999;
   transform: scale(0);
   transform-origin: right bottom;
