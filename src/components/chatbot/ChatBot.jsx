@@ -9,12 +9,43 @@ export const ChatBot = ({
   setShowChatBot = () => { }
 }) => {
 
+  const [checkemail, setCheckEmail] = useState(false)
+  const [email, setEmail] = useState("")
   const [queryInProgress, setQueryInProgress] = useState(false)
   const [messages, setMessages] = useState([
-    { text: "Hi! Please type your query.", self: false, image: '', isTyping: false }
+    checkemail ?
+      { text: "Hi! Please enter your email to get started.", self: false, image: '', isTyping: false }
+      :
+      { text: "Hi! Please type your query.", self: false, image: '', isTyping: false }
   ])
 
+  const validateEmail = (emailString) => {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailString)) {
+      return (true)
+    }
+    return (false)
+  }
+
   const sendMessage = (msg) => {
+    if (checkemail && !email) {
+      if (validateEmail(msg.trim())) {
+        const messageCopy = [
+          ...messages,
+          { text: msg.trim(), self: true, image: '', isTyping: false },
+          { text: "Please type your query.", self: false, image: '', isTyping: false }
+        ]
+        setMessages(messageCopy)
+        setEmail(msg.trim())
+      } else {
+        const messageCopy = [
+          ...messages,
+          { text: msg.trim(), self: true, image: '', isTyping: false },
+          { text: "Invalid Email! Please enter your email again.", self: false, image: '', isTyping: false }
+        ]
+        setMessages(messageCopy)
+      }
+      return
+    }
     const messageCopy = [
       ...messages,
       { text: msg.trim(), self: true, image: '', isTyping: false },
@@ -27,7 +58,7 @@ export const ChatBot = ({
   const getMessageRes = async (msg, messageCopy) => {
     try {
       setQueryInProgress(true)
-      const res = await apiCall(apiEndpoints.query, { query: msg })
+      const res = await apiCall(apiEndpoints.query, { query: msg, email })
       // console.log("api res==", res)
       if (res.data && res.data.error) {
         setQueryRes(res.data.error, messageCopy)
